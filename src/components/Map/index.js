@@ -1,11 +1,32 @@
 import React, { Component } from "react";
 import MapGL, { Marker } from "react-map-gl";
-
+import PropTypes from "prop-types";
 // eslint-disable-next-line import/no-extraneous-dependencies
 import "mapbox-gl/dist/mapbox-gl.css";
 import "./styles.scss";
 
-export default class Map extends Component {
+import { connect } from "react-redux";
+import { bindActionCreators } from "redux";
+import { Creators as ModalActions } from "../../store/ducks/modal";
+
+class Map extends Component {
+  static propTypes = {
+    showModal: PropTypes.func.isRequired,
+    users: PropTypes.arrayOf(
+      PropTypes.shape({
+        id: PropTypes.number,
+        name: PropTypes.string,
+        login: PropTypes.string,
+        url: PropTypes.string,
+        avatar: PropTypes.string,
+        coords: PropTypes.shape({
+          longitude: PropTypes.number,
+          latitude: PropTypes.number,
+        }),
+      }),
+    ).isRequired,
+  };
+
   state = {
     viewport: {
       width: window.innerWidth,
@@ -38,33 +59,45 @@ export default class Map extends Component {
 
   handleMapClick = (e) => {
     const [longitude, latitude] = e.lngLat;
-
-    console.log.tron(`Latitude: ${latitude} \nLongitude: ${longitude}`);
+    const { showModal } = this.props;
+    showModal({ latitude, longitude });
   };
 
   render() {
     const { viewport } = this.state;
+    const { users } = this.props;
     return (
       <MapGL
         {...viewport}
         onClick={this.handleMapClick}
-        mapStyle="mapbox://styles/mapbox/basic-v9"
-        mapboxApiAccessToken="pk.eyJ1IjoiZGllZ28zZyIsImEiOiJjamh0aHc4em0wZHdvM2tyc3hqbzNvanhrIn0.3HWnXHy_RCi35opzKo8sHQ"
+        mapStyle="mapbox://styles/mapbox/dark-v9"
+        mapboxApiAccessToken={process.env.REACT_APP_MAPBOX_ACCESS_TOKEN}
         onViewportChange={vp => this.setState({ viewport: vp })}
       >
-        <Marker
-          latitude={-23.5439948}
-          longitude={-46.6065452}
-          onClick={this.handleMapClick}
-          captureClick
-        >
-          <img
-            className="avatar"
-            alt="Avatar"
-            src="https://avatars2.githubusercontent.com/u/2254731?v=4"
-          />
-        </Marker>
+        {users.map(user => (
+          <Marker
+            id={user.id}
+            latitude={user.coords.latitude}
+            longitude={user.coords.longitude}
+            onClick={this.handleMapClick}
+            captureClick
+          >
+            <img className="avatar" alt={`${user.name} Avatar`} src={user.avatar} />
+          </Marker>
+        ))}
       </MapGL>
     );
   }
 }
+
+const mapStateToProps = state => ({
+  showModal: state.modal.showModal,
+  users: state.users.data,
+});
+
+const mapDispatchToProps = dispatch => bindActionCreators(ModalActions, dispatch);
+
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps,
+)(Map);

@@ -1,0 +1,63 @@
+.box-add-user {
+    form {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+
+        p {
+            font-weight: bold;
+            font-size: 20px;
+            margin-bottom: 20px;
+        }
+
+        input {
+            border-style: solid;
+            border-color: #777;
+            border-width: 0.4pt;
+            border-radius: 5px;
+            height: 20px;
+            width: 300px;
+            padding: 15px 20px;
+            font-size: 16px;
+            margin-bottom: 15px;
+            &:hover {
+                outline: none;
+            }
+            &:focus {
+                outline: none;
+            }
+        }
+
+        div {
+            width: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+    }
+}
+
+.btn {
+    border: none;
+    background: none;
+    height: 50px;
+    border-radius: 5px;
+    font-size: 18px;
+    flex: 1;
+    font-weight: bold;
+    color: #fff;
+    &:hover {
+        opacity: 0.8;
+        cursor: pointer;
+    }
+}
+
+.btn-back {
+    background-color: #777;
+    margin-right: 5px;
+}
+
+.btn-save {
+    background-color: #53cd76;
+    margin-left: 5px;
+}
